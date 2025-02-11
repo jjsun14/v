@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentine's Day Tic Tac Toe</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/super-bubble');
+    body {
+      font-family: 'Super Bubble', sans-serif;
+      background-color: #FF99CC; /* Regular pink background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .game-container {
+      text-align: center;
+      background-color: transparent;
+      padding: 20px;
+      border-radius: 20px;
+      max-width: 500px; /* Slightly larger container */
+      width: 90%;
+    }
+
+    h1 {
+      color: #e91e1e;
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 120px); /* Larger cells */
+      grid-template-rows: repeat(3, 120px); /* Larger cells */
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .cell {
+      background-color: #ffebfe;
+      border: 3px solid #e91e4a;
+      border-radius: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem; /* Larger font size */
+      font-weight: bold;
+      color: #e91e63;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .cell:hover {
+      background-color: #f798b9;
+    }
+
+    .cell.disabled {
+      pointer-events: none;
+    }
+
+    .message {
+      font-size: 24px;
+      font-weight: bold;
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px; /* Space between buttons */
+    }
+
+    .restart-button,
+    .congrats-button {
+      padding: 18px 35px;
+      background-color: #e91e63;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .restart-button:hover,
+    .congrats-button:hover {
+      background-color: #ff80aa;
+    }
+
+    .congrats-button {
+      display: none; /* Hidden by default */
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Seran's Tic Tac Toe</h1>
+    <div class="board" id="board">
+      <!-- Cells will be dynamically added here -->
+    </div>
+    <div class="message" id="message"></div>
+    <div class="button-container">
+      <button class="restart-button" id="restart-button">Restart Game</button>
+      <button class="congrats-button" id="congrats-button">Next Game</button>
+    </div>
+  </div>
+
+  <script>
+    const boardElement = document.getElementById("board");
+    const messageElement = document.getElementById("message");
+    const restartButton = document.getElementById("restart-button");
+    const congratsButton = document.getElementById("congrats-button");
+
+    let board = ["", "", "", "", "", "", "", "", ""]; // Represents the Tic Tac Toe board
+    let currentPlayer = "X"; // Player is X, AI is O
+    let gameActive = true;
+
+    // Create the board cells
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.setAttribute("data-index", i);
+      cell.addEventListener("click", handleCellClick);
+      boardElement.appendChild(cell);
+    }
+
+    // Handle cell clicks
+    function handleCellClick(event) {
+      if (!gameActive) return;
+
+      const cell = event.target;
+      const index = cell.getAttribute("data-index");
+
+      if (board[index] !== "") return; // Cell is already occupied
+
+      board[index] = currentPlayer;
+      cell.textContent = currentPlayer;
+      cell.classList.add("disabled");
+
+      if (checkWin(currentPlayer)) {
+        endGame(`You win! 💖`);
+        congratsButton.style.display = "inline-block"; // Show Congrats button
+        return;
+      }
+
+      if (board.every(cell => cell !== "")) {
+        endGame("It's a draw! 💔");
+        return;
+      }
+
+      currentPlayer = "O";
+      messageElement.textContent = "Jeff is thinking...";
+      setTimeout(makeAIMove, 500); // AI makes a move after a short delay
+    }
+
+    // AI move logic (medium difficulty)
+    function makeAIMove() {
+      if (!gameActive) return;
+
+      let move;
+      if (Math.random() < 0.1) {
+        // AI makes a random move 10% of the time
+        const emptyCells = board.map((cell, index) => cell === "" ? index : null).filter(index => index !== null);
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      } else {
+        // AI tries to win or block the player
+        move = getBestMove();
+      }
+
+      board[move] = "O";
+      const cell = document.querySelector(`.cell[data-index="${move}"]`);
+      cell.textContent = "O";
+      cell.classList.add("disabled");
+
+      if (checkWin("O")) {
+        endGame("Jeff wins! you suck bruh💔");
+        return;
+      }
+
+      if (board.every(cell => cell !== "")) {
+        endGame("It's a draw! 💔");
+        return;
+      }
+
+      currentPlayer = "X";
+      messageElement.textContent = "Your turn!";
+    }
+
+    // Get the best move for the AI
+    function getBestMove() {
+      // Check for a winning move
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+          board[i] = "O";
+          if (checkWin("O")) {
+            board[i] = "";
+            return i;
+          }
+          board[i] = "";
+        }
+      }
+
+      // Block the player's winning move
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+          board[i] = "X";
+          if (checkWin("X")) {
+            board[i] = "";
+            return i;
+          }
+          board[i] = "";
+        }
+      }
+
+      // Choose a random empty cell
+      const emptyCells = board.map((cell, index) => cell === "" ? index : null).filter(index => index !== null);
+      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
+
+    // Check for a win
+    function checkWin(player) {
+      const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6] // Diagonals
+      ];
+
+      return winningCombinations.some(combination => {
+        return combination.every(index => board[index] === player);
+      });
+    }
+
+    // End the game
+    function endGame(message) {
+      gameActive = false;
+      messageElement.textContent = message;
+    }
+
+    // Restart the game
+    restartButton.addEventListener("click", () => {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      gameActive = true;
+      messageElement.textContent = "";
+      congratsButton.style.display = "none"; // Hide Congrats button
+      document.querySelectorAll(".cell").forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove("disabled");
+      });
+    });
+
+    // Redirect to congrats.html
+    congratsButton.addEventListener("click", () => {
+      window.location.href = "scrambled.html";
+    });
+  </script>
+</body>
+</html>

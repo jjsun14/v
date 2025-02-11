@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will You Be My Valentine?</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/super-bubble');
+    body {
+      font-family: 'Super Bubble', sans-serif;
+      background-color: #FF99CC; /* Regular pink background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden; /* Prevent scrolling */
+    }
+
+    .container {
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      color: #e91e1e;
+      font-size: 4rem; /* Big letters */
+      margin-bottom: 20px;
+    }
+
+    .yes-button {
+      position: absolute;
+      padding: 10px 20px;
+      background-color: #e91e63;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: top 0.5s, left 0.5s;
+      opacity: 0; /* Initially hidden */
+    }
+
+    .no-button {
+      padding: 10px 20px;
+      background-color: #ff80aa;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>WILL YOU BE MY VALENTINE?</h1>
+    <button class="yes-button" id="yes-button">Yes</button>
+    <button class="no-button" id="no-button">No</button>
+  </div>
+
+  <script>
+    const yesButton = document.getElementById("yes-button");
+    const noButton = document.getElementById("no-button");
+
+    // Hide the Yes button for the first 2 seconds
+    setTimeout(() => {
+      yesButton.style.opacity = 1; // Make the Yes button visible
+    }, 2000);
+
+    // Move the Yes button randomly, avoiding the upper-left quadrant
+    function moveYesButton() {
+      const maxX = window.innerWidth - yesButton.offsetWidth;
+      const maxY = window.innerHeight - yesButton.offsetHeight;
+
+      // Define the upper-left quadrant boundaries
+      const avoidX = maxX * 0.25; // 25% of the screen width
+      const avoidY = maxY * 0.25; // 25% of the screen height
+
+      let randomX, randomY;
+
+      // Ensure the button doesn't appear in the upper-left quadrant
+      do {
+        randomX = Math.floor(Math.random() * maxX);
+        randomY = Math.floor(Math.random() * maxY);
+      } while (randomX < avoidX && randomY < avoidY);
+
+      yesButton.style.left = `${randomX}px`;
+      yesButton.style.top = `${randomY}px`;
+    }
+
+    // Move the Yes button every 0.5 seconds
+    setInterval(moveYesButton, 500);
+
+    // Redirect to denial.html if No is clicked
+    noButton.addEventListener("click", () => {
+      window.location.href = "denial.html";
+    });
+
+    // Redirect to final.html if Yes is clicked
+    yesButton.addEventListener("click", () => {
+      window.location.href = "final.html";
+    });
+  </script>
+</body>
+</html>

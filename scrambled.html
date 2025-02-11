@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrambled Valentine's Game</title>
+  <style>
+    @import url('https://fonts.cdnfonts.com/css/super-bubble');
+    body {
+      font-family: 'Super Bubble', sans-serif;
+      background-color: #FF99CC; /* Regular pink background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .game-container {
+      text-align: center;
+      background-color: transparent;
+      padding: 20px;
+      border-radius: 20px;
+      max-width: 700px; /* Slightly larger container */
+      width: 90%;
+    }
+
+    h1 {
+      color: #e91e1e;
+      font-size: 3.5rem; /* Larger font size */
+      margin-bottom: 20px;
+    }
+
+    .scrambled-word {
+      font-size: 2.5rem; /* Larger font size */
+      font-weight: bold;
+      color: #e91e63;
+      margin-bottom: 20px;
+    }
+
+    .input-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap; /* Allow wrapping for multiple words */
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .input-container input {
+      width: 50px; /* Larger input boxes */
+      height: 50px; /* Larger input boxes */
+      text-align: center;
+      font-size: 1.8rem; /* Larger font size */
+      font-weight: bold;
+      border: 3px solid #e91e4a;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .input-container .space {
+      width: 20px; /* Space between words */
+      height: 50px;
+      background-color: transparent;
+      border: none;
+    }
+
+    .message {
+      font-size: 2rem; /* Larger font size */
+      font-weight: bold;
+      color: #e91e63;
+      margin-bottom: 20px;
+    }
+
+    .submit-button,
+    .next-game-button {
+      padding: 20px 40px; /* Larger buttons */
+      background-color: #e91e63;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 24px; /* Larger font size */
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .submit-button:hover,
+    .next-game-button:hover {
+      background-color: #ff80aa;
+    }
+
+    .next-game-button {
+      display: none; /* Hidden by default */
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Unscramble the Phrase!</h1>
+    <div class="scrambled-word" id="scrambled-word"></div>
+    <div class="input-container" id="input-container">
+      <!-- Input fields will be dynamically added here -->
+    </div>
+    <div class="message" id="message"></div>
+    <button class="submit-button" id="submit-button">Submit Guess</button>
+    <button class="next-game-button" id="next-game-button">Next Game</button>
+  </div>
+
+  <script>
+    const phrase = "WILL YOU BE MY VALENTINE"; // The phrase to unscramble
+    const scrambledWordElement = document.getElementById("scrambled-word");
+    const inputContainer = document.getElementById("input-container");
+    const messageElement = document.getElementById("message");
+    const submitButton = document.getElementById("submit-button");
+    const nextGameButton = document.getElementById("next-game-button");
+
+    // Scramble each word individually
+    function scrambleWord(word) {
+      return word.split("").sort(() => Math.random() - 0.5).join("");
+    }
+
+    // Scramble the entire phrase (each word separately)
+    function scramblePhrase(phrase) {
+      return phrase.split(" ").map(word => scrambleWord(word)).join(" ");
+    }
+
+    // Display the scrambled phrase
+    const scrambledPhrase = scramblePhrase(phrase);
+    scrambledWordElement.textContent = scrambledPhrase;
+
+    // Create input fields for each letter (including spaces)
+    phrase.split("").forEach((char, index) => {
+      if (char === " ") {
+        // Add a space placeholder
+        const space = document.createElement("div");
+        space.classList.add("space");
+        inputContainer.appendChild(space);
+      } else {
+        // Add an input field for each letter
+        const input = document.createElement("input");
+        input.setAttribute("type", "text");
+        input.setAttribute("maxlength", "1");
+        inputContainer.appendChild(input);
+      }
+    });
+
+    // Handle submit button click
+    submitButton.addEventListener("click", () => {
+      const inputs = document.querySelectorAll(".input-container input");
+      let userGuess = "";
+      inputs.forEach(input => {
+        userGuess += input.value.toUpperCase();
+      });
+
+      // Add spaces back to the user's guess
+      const phraseWithoutSpaces = phrase.replace(/ /g, "");
+      if (userGuess === phraseWithoutSpaces) {
+        messageElement.textContent = "Correct! 💖";
+        messageElement.style.color = "green";
+        nextGameButton.style.display = "inline-block"; // Show Next Game button
+      } else {
+        messageElement.textContent = "Incorrect. Try again! 💔";
+        messageElement.style.color = "red";
+      }
+    });
+
+    // Redirect to valentines.html
+    nextGameButton.addEventListener("click", () => {
+      window.location.href = "valentines.html";
+    });
+  </script>
+</body>
+</html>
